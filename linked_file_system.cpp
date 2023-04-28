@@ -8,6 +8,8 @@ using namespace std::chrono;
 
 const int BLOCK_SIZE = 4096; // block size in bytes
 const int NUM_BLOCKS = 512;  // total number of blocks on the disk
+int free_list_head = -1;
+int free_block_count = 0;
 
 struct Block
 {
@@ -32,6 +34,10 @@ public:
     FileSystem()
     {
         blocks.resize(NUM_BLOCKS);
+        for (int i = 0; i < blocks.size(); i++)
+        {
+            freeBlock(i);
+        }
     }
 
     bool createOrModifyFile(string name, int size)
@@ -39,26 +45,14 @@ public:
         auto start = high_resolution_clock::now(); // start time stamp
         int num_blocks_needed = (size + BLOCK_SIZE - 1) / BLOCK_SIZE;
         int first_block = -1;
-        int prev_block = -1;
 
         // check if there is enough space
-        int free_blocks = 0;
-        for (int i = 0; i < NUM_BLOCKS; i++)
-        {
-            if (!blocks[i].used)
-            {
-                free_blocks++;
-                if (free_blocks == num_blocks_needed)
-                {
-                    first_block = i - num_blocks_needed + 1;
-                    break;
-                }
-            }
-            else
-            {
-                free_blocks = 0;
-            }
-        }
+        // int free_blocks = 0;
+
+        if (num_blocks_needed > free_block_count)
+            first_block = -1;
+        else
+            first_block = free_list_head;
 
         if (first_block == -1)
         {
@@ -77,8 +71,7 @@ public:
                 while (block != -1)
                 {
                     int next_block = blocks[block].next_block;
-                    blocks[block].used = false;
-                    blocks[block].next_block = -1;
+                    freeBlock(block);
                     block = next_block;
                 }
                 directory.erase(directory.begin() + i);
@@ -87,21 +80,16 @@ public:
         }
 
         // allocate blocks to new file
-        int block = first_block;
-        for (int i = 0; i < num_blocks_needed; i++)
+        int block = getFreeBlock();
+        int prev_block = block;
+        directory.push_back(File{name, block, size});
+
+        for (int i = 0; i < num_blocks_needed - 1; i++)
         {
-            blocks[block].used = true;
             blocks[block].next_block = -1;
-            if (prev_block != -1)
-            {
-                blocks[prev_block].next_block = block;
-            }
-            else
-            {
-                directory.push_back(File{name, block, size});
-            }
+            blocks[prev_block].next_block = getFreeBlock();
             prev_block = block;
-            block++;
+            block = blocks[prev_block].next_block;
         }
 
         auto stop = high_resolution_clock::now();                  // stop time stamp
@@ -121,7 +109,7 @@ public:
                 while (block != -1)
                 {
                     int next_block = blocks[block].next_block;
-                    blocks[block].used = false;
+                    freeBlock(block);
                     block = next_block;
                 }
                 directory.erase(directory.begin() + i);
@@ -145,11 +133,41 @@ public:
             cout << "- " << file.name << " (size: " << file.file_size << " bytes, start block: " << file.start_block << ")" << endl;
         }
     }
+
+private:
+    void freeBlock(int block_num)
+    {
+        // Mark the block as unused
+        blocks[block_num].used = false;
+        // Add the block to the front of the free list
+        blocks[block_num].next_block = free_list_head;
+        free_list_head = block_num;
+        free_block_count++;
+    }
+
+    int getFreeBlock()
+    {
+        if (free_block_count == -1)
+            return -1;
+
+        int free_block = free_list_head;
+
+        free_list_head = blocks[free_list_head].next_block;
+        free_block_count--;
+        // Remove free block from list
+
+        blocks[free_block].used = true;
+        blocks[free_block].next_block = -1;
+
+        return free_block;
+    }
 };
 
 int main()
 {
     FileSystem fs;
+
+    cout << "\n------------------------------------------start-------------------------------------------------\n";
 
     // create or modify files
     fs.createOrModifyFile("file1.txt", 8192);
@@ -171,6 +189,8 @@ int main()
 
     // print directory
     fs.printDirectory();
+
+    cout << "\n--------------------------------Done---------------------------------------------\n";
 
     return 0;
 }
