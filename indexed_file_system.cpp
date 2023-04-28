@@ -73,9 +73,8 @@ public:
                 return false;
             }
             blocks.push_back(block);
-            blocks[block] = true; // mark block as used by the file
+            // mark block as used by the file
             num_blocks_allocated++;
-
         }
         directory.push_back({name, blocks[0], file_size, blocks}); // add the file to the directory
         auto stop = high_resolution_clock::now();                  // stop time stamp
@@ -136,6 +135,7 @@ private:
         {
             if (!blocks[i])
             {
+                blocks[i] = true;
                 return i;
             }
         }
