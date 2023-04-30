@@ -37,8 +37,8 @@ public:
         if (num_blocks > NUM_BLOCKS)
         {
             auto stop = high_resolution_clock::now();                  // stop time stamp
-            auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-            cout << "Failed to create/modify " << name << " (file size exceeds disk capacity) in " << duration.count() << " microseconds" << endl;
+            auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+            cout << "Failed to create/modify " << name << " (file size exceeds disk capacity) in " << duration.count() << " nanoseconds" << endl;
             return false;
         }
         for (int i = 0; i < directory.size(); i++)
@@ -68,8 +68,8 @@ public:
                     blocks[block] = false; // free the blocks allocated to the file
                 }
                 auto stop = high_resolution_clock::now();                  // stop time stamp
-                auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-                cout << "Failed to create/modify " << name << " (disk space not available) in " << duration.count() << " microseconds" << endl;
+                auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+                cout << "Failed to create/modify " << name << " (disk space not available) in " << duration.count() << " nanoseconds" << endl;
                 return false;
             }
             blocks.push_back(block);
@@ -79,8 +79,8 @@ public:
         }
         directory.push_back({name, blocks[0], file_size, blocks}); // add the file to the directory
         auto stop = high_resolution_clock::now();                  // stop time stamp
-        auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-        cout << "Created/modified " << name << " (file size: " << file_size << " bytes) in " << duration.count() << " microseconds" << endl;
+        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        cout << "Created/modified " << name << " (file size: " << file_size << " bytes) in " << duration.count() << " nanoseconds" << endl;
         return true;
     }
 
@@ -99,14 +99,14 @@ public:
                 }
                 directory.erase(directory.begin() + i);                    // remove the file from the directory
                 auto stop = high_resolution_clock::now();                  // stop time stamp
-                auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-                cout << "Deleted " << name << " in " << duration.count() << " microseconds" << endl;
+                auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+                cout << "Deleted " << name << " in " << duration.count() << " nanoseconds" << endl;
                 return true;
             }
         }
         auto stop = high_resolution_clock::now();                  // stop time stamp
-        auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-        cout << "Failed to delete " << name << " (file not found) in " << duration.count() << " microseconds" << endl;
+        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        cout << "Failed to delete " << name << " (file not found) in " << duration.count() << " nanoseconds" << endl;
         return false;
     }
 
