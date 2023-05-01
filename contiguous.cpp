@@ -122,6 +122,32 @@ public:
         return false; // file not found in the directory
     }
 
+    bool readFile(string name)
+    {
+        for (const auto &file : directory)
+        {
+            if (file.name == name)
+            {
+                cout << "Blocks of file '" << name << "':" << endl;
+
+                // Print the blocks of the file
+                for (int i = file.start_block; i < file.start_block + file.num_blocks; ++i)
+                {
+
+                    // Print the block's data
+                    cout << i << ",";
+                }
+                cout << "\n";
+
+                return true;
+            }
+        }
+
+        cout << name << " NOT FOUND!!\n";
+
+        return false; // file not found
+    }
+
     void printDirectory()
     {
         cout << "Directory:" << endl;
@@ -156,13 +182,14 @@ int main()
 
     // print directory
     fs.printDirectory();
-    // Get the maximum resident set size
-    long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
 
-    // Convert to megabytes
-    double max_rss_mb = max_rss / (1024.0 * 1024.0);
+    // read existing file
+    cout << "Reading file1..." << endl;
+    fs.readFile("file1.txt");
 
-    cout << "Memory used by program: " << max_rss_mb << " MB" << endl;
+    // read non-existing file
+    cout << "Reading file6..." << endl;
+    fs.readFile("file6.txt");
 
     return 0;
 }
