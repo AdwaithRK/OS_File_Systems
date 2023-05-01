@@ -57,8 +57,8 @@ public:
         if (first_block == -1)
         {
             auto stop = high_resolution_clock::now();                  // stop time stamp
-            auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-            cout << "Failed to create/modify " << name << " (not enough space) in " << duration.count() << " microseconds" << endl;
+            auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+            cout << "Failed to create/modify " << name << " (not enough space) in " << duration.count() << " nanoseconds" << endl;
             return false;
         }
 
@@ -93,8 +93,8 @@ public:
         }
 
         auto stop = high_resolution_clock::now();                  // stop time stamp
-        auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-        cout << "Created/modified " << name << " (size: " << size << " bytes) in " << duration.count() << " microseconds" << endl;
+        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        cout << "Created/modified " << name << " (size: " << size << " bytes) in " << duration.count() << " nanoseconds" << endl;
         return true;
     }
 
@@ -114,14 +114,14 @@ public:
                 }
                 directory.erase(directory.begin() + i);
                 auto stop = high_resolution_clock::now();                  // stop time stamp
-                auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-                cout << "Deleted " << name << " in " << duration.count() << " microseconds" << endl;
+                auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+                cout << "Deleted " << name << " in " << duration.count() << " nanoseconds" << endl;
                 return true;
             }
         }
         auto stop = high_resolution_clock::now();                  // stop time stamp
-        auto duration = duration_cast<microseconds>(stop - start); // calculate duration in microseconds
-        cout << "Failed to delete " << name << " (not found) in " << duration.count() << " microseconds" << endl;
+        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        cout << "Failed to delete " << name << " (not found) in " << duration.count() << " nanoseconds" << endl;
         return false;
     }
 
