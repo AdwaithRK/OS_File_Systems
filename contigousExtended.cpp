@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <chrono> // for time stamps
+#include <iostream>
+#include <unistd.h>
 using namespace std;
 using namespace std::chrono; // for time stamps
 const int BLOCK_SIZE = 4096; // block size in bytes
@@ -194,4 +196,13 @@ int main()
     initAllocate("file4.txt", 112000);
     deleteFile("file1.txt");
     readFile("file1.txt");
+
+    long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
+
+    // Convert to megabytes
+    double max_rss_mb = max_rss / (1024.0 * 1024.0);
+
+    cout << "Memory used by program: " << max_rss_mb << " MB" << endl;
+
+    return 0;
 }

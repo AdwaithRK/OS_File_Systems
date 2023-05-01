@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <iostream>
+#include <unistd.h>
 using namespace std;
 using namespace std::chrono;
 
@@ -36,7 +38,7 @@ public:
         int num_blocks = (file_size + BLOCK_SIZE - 1) / BLOCK_SIZE; // round up division
         if (num_blocks > NUM_BLOCKS)
         {
-            auto stop = high_resolution_clock::now();                  // stop time stamp
+            auto stop = high_resolution_clock::now();                 // stop time stamp
             auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
             cout << "Failed to create/modify " << name << " (file size exceeds disk capacity) in " << duration.count() << " nanoseconds" << endl;
             return false;
@@ -67,7 +69,7 @@ public:
                     int block = blocks[i];
                     blocks[block] = false; // free the blocks allocated to the file
                 }
-                auto stop = high_resolution_clock::now();                  // stop time stamp
+                auto stop = high_resolution_clock::now();                 // stop time stamp
                 auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
                 cout << "Failed to create/modify " << name << " (disk space not available) in " << duration.count() << " nanoseconds" << endl;
                 return false;
@@ -78,7 +80,7 @@ public:
         }
         directory.push_back({name, blocks[0], file_size, blocks}); // add the file to the directory
         auto stop = high_resolution_clock::now();                  // stop time stamp
-        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        auto duration = duration_cast<nanoseconds>(stop - start);  // calculate duration in nanoseconds
         cout << "Created/modified " << name << " (file size: " << file_size << " bytes) in " << duration.count() << " nanoseconds" << endl;
         return true;
     }
@@ -96,14 +98,14 @@ public:
                     int block = blocks[j];
                     blocks[block] = false; // free the blocks allocated to the file
                 }
-                directory.erase(directory.begin() + i);                    // remove the file from the directory
-                auto stop = high_resolution_clock::now();                  // stop time stamp
+                directory.erase(directory.begin() + i);                   // remove the file from the directory
+                auto stop = high_resolution_clock::now();                 // stop time stamp
                 auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
                 cout << "Deleted " << name << " in " << duration.count() << " nanoseconds" << endl;
                 return true;
             }
         }
-        auto stop = high_resolution_clock::now();                  // stop time stamp
+        auto stop = high_resolution_clock::now();                 // stop time stamp
         auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
         cout << "Failed to delete " << name << " (file not found) in " << duration.count() << " nanoseconds" << endl;
         return false;
@@ -154,5 +156,12 @@ int main()
     fileSystem.printDirectory();
     fileSystem.deleteFile("file1.txt");
     fileSystem.printDirectory();
+
+    long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
+
+    // Convert to megabytes
+    double max_rss_mb = max_rss / (1024.0 * 1024.0);
+
+    cout << "Memory used by program: " << max_rss_mb << " MB" << endl;
     return 0;
 }

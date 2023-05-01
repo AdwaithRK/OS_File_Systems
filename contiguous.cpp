@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <chrono> // for time stamps
+#include <iostream>
+#include <unistd.h>
 using namespace std;
 using namespace std::chrono; // for time stamps
 
@@ -80,14 +82,14 @@ public:
                 blocks[i] = true;
             }
             directory.push_back({name, start_block, num_blocks_needed});
-            auto stop = high_resolution_clock::now();                  // stop time stamp
+            auto stop = high_resolution_clock::now();                 // stop time stamp
             auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
             cout << "Created or modified " << name << " in " << duration.count() << " nanoseconds" << endl;
             return true;
         }
         else
         {
-            auto stop = high_resolution_clock::now();                  // stop time stamp
+            auto stop = high_resolution_clock::now();                 // stop time stamp
             auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
             cout << "Failed to create or modify " << name << " in " << duration.count() << " nanoseconds" << endl;
             return false; // not enough contiguous free blocks available
@@ -107,14 +109,14 @@ public:
                 {
                     blocks[j] = false; // free the blocks allocated to the file
                 }
-                directory.erase(directory.begin() + i);                    // remove the file from the directory
-                auto stop = high_resolution_clock::now();                  // stop time stamp
+                directory.erase(directory.begin() + i);                   // remove the file from the directory
+                auto stop = high_resolution_clock::now();                 // stop time stamp
                 auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
                 cout << "Deleted " << name << " in " << duration.count() << " nanoseconds" << endl;
                 return true;
             }
         }
-        auto stop = high_resolution_clock::now();                  // stop time stamp
+        auto stop = high_resolution_clock::now();                 // stop time stamp
         auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
         cout << "Failed to delete " << name << " in " << duration.count() << " nanoseconds" << endl;
         return false; // file not found in the directory
@@ -154,6 +156,13 @@ int main()
 
     // print directory
     fs.printDirectory();
+    // Get the maximum resident set size
+    long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
+
+    // Convert to megabytes
+    double max_rss_mb = max_rss / (1024.0 * 1024.0);
+
+    cout << "Memory used by program: " << max_rss_mb << " MB" << endl;
 
     return 0;
 }
