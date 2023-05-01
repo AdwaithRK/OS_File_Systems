@@ -136,6 +136,32 @@ public:
         }
     }
 
+    void readFile(string name)
+    {
+        auto start = high_resolution_clock::now(); // start time stamp
+        for (const auto &file : directory)
+        {
+            if (file.name == name)
+            {
+                cout << "\nReading File : " << name << "\n";
+                int block = file.start_block;
+                while (block != -1)
+                {
+                    cout << block << " ";
+                    block = blocks[block].next_block;
+                }
+                cout << endl;
+                auto stop = high_resolution_clock::now();                 // stop time stamp
+                auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+                cout << "Read " << name << " (size: " << file.file_size << " bytes) in " << duration.count() << " nanoseconds" << endl;
+                return;
+            }
+        }
+        auto stop = high_resolution_clock::now();                 // stop time stamp
+        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        cout << "Failed to read " << name << " (not found) in " << duration.count() << " nanoseconds" << endl;
+    }
+
 private:
     void freeBlock(int block_num)
     {
@@ -191,6 +217,10 @@ int main()
 
     // print directory
     fs.printDirectory();
+
+    fs.readFile("file4.txt");
+
+    fs.readFile("file2.txt");
 
     long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
 

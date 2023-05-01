@@ -130,6 +130,41 @@ public:
         }
     }
 
+    void readFile(string name)
+    {
+        auto start = high_resolution_clock::now(); // start time stamp
+        bool found = false;
+        for (int i = 0; i < directory.size(); i++)
+        {
+            if (directory[i].name == name)
+            {
+                found = true;
+                vector<int> blocks = directory[i].blocks;
+                cout << "Reading file " << name << " (size: " << directory[i].file_size << " bytes, blocks: ";
+                for (int j = 0; j < blocks.size(); j++)
+                {
+                    cout << blocks[j];
+                    if (j < blocks.size() - 1)
+                    {
+                        cout << ", ";
+                    }
+                }
+                cout << ")" << endl;
+                break;
+            }
+        }
+        auto stop = high_resolution_clock::now();                 // stop time stamp
+        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        if (!found)
+        {
+            cout << "Failed to read " << name << " (file not found) in " << duration.count() << " nanoseconds" << endl;
+        }
+        else
+        {
+            cout << "Read " << name << " in " << duration.count() << " nanoseconds" << endl;
+        }
+    }
+
 private:
     int findFreeBlock()
     {
@@ -156,6 +191,10 @@ int main()
     fileSystem.printDirectory();
     fileSystem.deleteFile("file1.txt");
     fileSystem.printDirectory();
+
+    fileSystem.readFile("file2.txt");
+
+    fileSystem.readFile("file4.txt");
 
     long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
 

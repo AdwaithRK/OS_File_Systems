@@ -124,6 +124,8 @@ public:
 
     bool readFile(string name)
     {
+        auto start = high_resolution_clock::now(); // start time stamp
+
         for (const auto &file : directory)
         {
             if (file.name == name)
@@ -138,12 +140,17 @@ public:
                     cout << i << ",";
                 }
                 cout << "\n";
-
+                auto stop = high_resolution_clock::now();                 // stop time stamp
+                auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+                cout << "Read " << name << " in " << duration.count() << " nanoseconds" << endl;
                 return true;
             }
         }
 
         cout << name << " NOT FOUND!!\n";
+        auto stop = high_resolution_clock::now();                 // stop time stamp
+        auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
+        cout << "Failed to read " << name << " (not found) in " << duration.count() << " nanoseconds" << endl;
 
         return false; // file not found
     }
