@@ -3,6 +3,9 @@
 #include <chrono>
 #include <iostream>
 #include <unistd.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
 using namespace std::chrono;
 
@@ -196,11 +199,23 @@ int main()
 
     fileSystem.readFile("file4.txt");
 
-    long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
-
-    // Convert to megabytes
-    double max_rss_mb = max_rss / (1024.0 * 1024.0);
-
-    cout << "Memory used by program: " << max_rss_mb << " MB" << endl;
+    // Get the maximum resident set size
+    ifstream status("/proc/self/status");
+    if (!status)
+    {
+        cerr << "Error: could not open /proc/self/status" << endl;
+        return 1;
+    }
+    string line;
+    while (getline(status, line))
+    {
+        if (line.compare(0, 7, "VmSize:") == 0)
+        {
+            long long mem_size = stoll(line.substr(7)); // convert from KB to bytes
+            cout << "Total used memory: " << mem_size << " kilo bytes" << endl;
+            break;
+        }
+    }
+    status.close();
     return 0;
 }

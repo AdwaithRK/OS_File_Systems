@@ -4,6 +4,9 @@
 #include <chrono> // for time stamps
 #include <iostream>
 #include <unistd.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
 using namespace std::chrono; // for time stamps
 
@@ -197,6 +200,25 @@ int main()
     // read non-existing file
     cout << "Reading file6..." << endl;
     fs.readFile("file6.txt");
+
+    // Get the maximum resident set size
+    ifstream status("/proc/self/status");
+    if (!status)
+    {
+        cerr << "Error: could not open /proc/self/status" << endl;
+        return 1;
+    }
+    string line;
+    while (getline(status, line))
+    {
+        if (line.compare(0, 7, "VmSize:") == 0)
+        {
+            long long mem_size = stoll(line.substr(7)); // convert from KB to bytes
+            cout << "Total used memory: " << mem_size << " kilo bytes" << endl;
+            break;
+        }
+    }
+    status.close();
 
     return 0;
 }
