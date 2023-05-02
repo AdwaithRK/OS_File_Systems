@@ -13,6 +13,8 @@ using namespace std::chrono; // for time stamps
 const int BLOCK_SIZE = 4096; // block size in bytes
 const int NUM_BLOCKS = 512;  // total number of blocks on the disk
 
+int total_block_count = 0;
+
 struct File
 {
     string name;
@@ -85,6 +87,7 @@ public:
                 blocks[i] = true;
             }
             directory.push_back({name, start_block, num_blocks_needed});
+            incrementBlockCount(num_blocks_needed);
             auto stop = high_resolution_clock::now();                 // stop time stamp
             auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
             cout << "Created or modified " << name << " in " << duration.count() << " nanoseconds" << endl;
@@ -112,7 +115,8 @@ public:
                 {
                     blocks[j] = false; // free the blocks allocated to the file
                 }
-                directory.erase(directory.begin() + i);                   // remove the file from the directory
+                directory.erase(directory.begin() + i); // remove the file from the directory
+                decrementBlockCount(num_blocks);
                 auto stop = high_resolution_clock::now();                 // stop time stamp
                 auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
                 cout << "Deleted " << name << " in " << duration.count() << " nanoseconds" << endl;
@@ -165,6 +169,18 @@ public:
         {
             cout << "  " << file.name << " (" << file.num_blocks << " blocks, starting at block " << file.start_block << ")" << endl;
         }
+    }
+
+    void incrementBlockCount(int count)
+    {
+        total_block_count = total_block_count + count;
+    }
+
+    void decrementBlockCount(int count)
+    {
+        if (total_block_count == 0)
+            return;
+        total_block_count = total_block_count - count;
     }
 };
 
@@ -219,6 +235,9 @@ int main()
         }
     }
     status.close();
+
+    cout << "Total blocks used : " << total_block_count << endl;
+    cout << "Total memory used by blocks : " << total_block_count * BLOCK_SIZE << "bytes\n";
 
     return 0;
 }

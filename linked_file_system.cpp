@@ -15,6 +15,8 @@ const int NUM_BLOCKS = 512;  // total number of blocks on the disk
 int free_list_head = -1;
 int free_block_count = 0;
 
+int total_block_count = 0;
+
 struct Block
 {
     bool used = false;
@@ -96,6 +98,8 @@ public:
             block = blocks[prev_block].next_block;
         }
 
+        incrementBlockCount(num_blocks_needed);
+
         auto stop = high_resolution_clock::now();                 // stop time stamp
         auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
         cout << "Created/modified " << name << " (size: " << size << " bytes) in " << duration.count() << " nanoseconds" << endl;
@@ -104,6 +108,7 @@ public:
 
     bool deleteFile(string name)
     {
+        int count_blocks = 0;
         auto start = high_resolution_clock::now(); // start time stamp
         for (int i = 0; i < directory.size(); i++)
         {
@@ -115,8 +120,11 @@ public:
                     int next_block = blocks[block].next_block;
                     freeBlock(block);
                     block = next_block;
+                    count_blocks++;
                 }
                 directory.erase(directory.begin() + i);
+                int num_blocks = directory[i].file_size;
+                decrementBlockCount(count_blocks);
                 auto stop = high_resolution_clock::now();                 // stop time stamp
                 auto duration = duration_cast<nanoseconds>(stop - start); // calculate duration in nanoseconds
                 cout << "Deleted " << name << " in " << duration.count() << " nanoseconds" << endl;
@@ -191,6 +199,18 @@ private:
 
         return free_block;
     }
+
+    void incrementBlockCount(int count)
+    {
+        total_block_count = total_block_count + count;
+    }
+
+    void decrementBlockCount(int count)
+    {
+        if (total_block_count == 0)
+            return;
+        total_block_count = total_block_count - count;
+    }
 };
 
 int main()
@@ -244,6 +264,9 @@ int main()
         }
     }
     status.close();
+    // Convert to megabytes
+    cout << "Total blocks used : " << total_block_count << endl;
+    cout << "Total memory used by blocks : " << total_block_count * BLOCK_SIZE << "bytes\n";
 
     cout << "\n------------------------------------------Done---------------------------------------------------\n";
 
