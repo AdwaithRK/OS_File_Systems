@@ -71,12 +71,14 @@ void initAllocate(string fileName, int size)
 {
     auto start = high_resolution_clock::now(); // start time stamp
     int noBlocks = (size + BLOCK_SIZE - 1) / BLOCK_SIZE;
+
     int ind = isPossible(noBlocks);
     if (ind == -1)
     {
         cout << "File named :" << fileName << " cannot be intialized with size :" << size << " bytes\n";
         return;
     }
+
     file f;
     f.fileName = fileName;
     f.startBlock = ind;
@@ -111,6 +113,7 @@ void extendAllocate(string fileName, int size)
         cout << "error, no such file named : " << fileName << " on disk and hence cannot be extended\n";
         return;
     }
+
     for (auto &a : allocations)
     {
         if (a.fileName == fileName && a.isExtend == false)
@@ -188,21 +191,29 @@ void deleteFile(string fileName)
 
 int main()
 {
-    initAllocate("file1.txt", 12000);
-    extendAllocate("file1.txt", 8000);
-    readFile("file1.txt");
-    initAllocate("file2.txt", 30000);
-    initAllocate("file3.txt", 40000);
-    initAllocate("file4.txt", 112000);
-    deleteFile("file1.txt");
-    readFile("file1.txt");
+    freopen("log.txt", "a", stdout);
 
+    initAllocate("file1.txt", 8192);
+    initAllocate("file2.txt", 16384);
+    initAllocate("file3.txt", 4096);
+    initAllocate("file4.txt", 24576);
+    readFile("file1.txt");
+    readFile("file3.txt");
     long max_rss = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
 
     // Convert to megabytes
     double max_rss_mb = max_rss / (1024.0 * 1024.0);
 
     cout << "Memory used by program: " << max_rss_mb << " MB" << endl;
+    int totalBlocks = 0;
+    for (int i = 0; i < NUM_BLOCKS; i++)
+    {
+        if (blocks[i])
+            totalBlocks++;
+    }
+    cout << "Total blocks used : " << totalBlocks << endl;
+
+    cout << "\n-----------end of contiguous extended---------------------\n";
 
     return 0;
 }

@@ -186,6 +186,8 @@ public:
 
 int main()
 {
+    freopen("log.txt", "a", stdout);
+
     FileSystem fs;
 
     // create or modify files
@@ -238,6 +240,8 @@ int main()
 
     cout << "Total blocks used : " << total_block_count << endl;
     cout << "Total memory used by blocks : " << total_block_count * BLOCK_SIZE << "bytes\n";
+
+    cout << "\n-----------end of contiguous ---------------------\n";
 
     return 0;
 }

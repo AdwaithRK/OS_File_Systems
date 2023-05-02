@@ -201,9 +201,10 @@ private:
 
 int main()
 {
+    freopen("log.txt", "a", stdout);
     FileSystem fileSystem;
-    fileSystem.createOrModifyFile("file1.txt", 4096);
     fileSystem.createOrModifyFile("file2.txt", 8192);
+    fileSystem.createOrModifyFile("file1.txt", 4096);
     fileSystem.createOrModifyFile("file3.txt", 16384);
     fileSystem.printDirectory();
     fileSystem.createOrModifyFile("file2.txt", 16384);
@@ -236,5 +237,7 @@ int main()
 
     cout << "Total blocks used : " << total_block_count << endl;
     cout << "Total memory used by blocks : " << total_block_count * BLOCK_SIZE << "bytes\n";
+
+    cout << "\n-----------end of indexed ---------------------\n";
     return 0;
 }

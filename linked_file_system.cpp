@@ -215,15 +215,17 @@ private:
 
 int main()
 {
+    freopen("log.txt", "a", stdout);
+
     FileSystem fs;
 
     cout << "\n------------------------------------------Start-------------------------------------------------\n";
 
     // create or modify files
     fs.createOrModifyFile("file1.txt", 8192);
-    fs.createOrModifyFile("file2.txt", 16384);
-    fs.createOrModifyFile("file3.txt", 4096);
-    fs.createOrModifyFile("file4.txt", 24576);
+    // fs.createOrModifyFile("file2.txt", 16384);
+    // fs.createOrModifyFile("file3.txt", 4096);
+    // fs.createOrModifyFile("file4.txt", 24576);
 
     // print directory
     fs.printDirectory();
@@ -267,8 +269,7 @@ int main()
     // Convert to megabytes
     cout << "Total blocks used : " << total_block_count << endl;
     cout << "Total memory used by blocks : " << total_block_count * BLOCK_SIZE << "bytes\n";
-
-    cout << "\n------------------------------------------Done---------------------------------------------------\n";
+    cout << "\n-----------end of linked ---------------------\n";
 
     return 0;
 }
