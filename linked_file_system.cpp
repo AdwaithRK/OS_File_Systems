@@ -271,5 +271,7 @@ int main()
     cout << "Total memory used by blocks : " << total_block_count * BLOCK_SIZE << "bytes\n";
     cout << "\n-----------end of linked ---------------------\n";
 
+    exit(0);
+
     return 0;
 }
